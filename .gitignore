@@ -73,4 +73,3 @@ fabric.properties
 *.out
 
 .idea/
-go-template/

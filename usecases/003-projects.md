@@ -2,4 +2,4 @@
 
 ## I want to create a new go-project
 
-go-template new --name <name>
+go-template new --name <name> --template <name-of-template>
