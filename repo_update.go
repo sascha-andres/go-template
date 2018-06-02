@@ -16,15 +16,37 @@ package engine
 
 import (
 	"fmt"
-	"os"
 	"path"
+
+	"io/ioutil"
+
+	"github.com/sascha-andres/go-template/wrapper"
 )
 
-// RemoveRepository deletes a repository from the local machine
-func (e *Engine) RemoveRepository(name string) error {
+// UpdateRepository issues a git pull
+func (e *Engine) UpdateRepository(name string) error {
 	if ok, _ := e.exists(name); ok {
-		return os.RemoveAll(path.Join(e.storageDirectory, name))
+		_, err := wrapper.Git("-C", path.Join(e.storageDirectory, name), "pull")
+		return err
 	} else {
 		return fmt.Errorf("no such repository: %s", name)
 	}
+}
+
+// UpdateRepositories issues a git pull on all template repositories
+func (e *Engine) UpdateRepositories() error {
+	entries, err := ioutil.ReadDir(e.storageDirectory)
+	if err != nil {
+		return err
+	}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			if ok, _ := e.exists(entry.Name()); ok {
+				if err := e.UpdateRepository(entry.Name()); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }

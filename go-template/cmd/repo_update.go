@@ -16,23 +16,44 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/sascha-andres/go-template"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // repoUpdateCmd represents the update command
 var repoUpdateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "update repositories",
-	Long: `Update repositories in your local storage`,
+	Long:  `Update repositories in your local storage`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("update called")
+		e, err := engine.New(viper.GetString("storage"), viper.GetString("log-level"))
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		_ = e
+		limitTo := cmd.Flag("limit-to").Value.String()
+		if limitTo != "" {
+			err := e.UpdateRepository(limitTo)
+			if err != nil {
+				fmt.Println(err.Error())
+				os.Exit(1)
+			}
+		} else {
+			err := e.UpdateRepositories()
+			if err != nil {
+				fmt.Println(err.Error())
+				os.Exit(1)
+			}
+		}
 	},
 }
 
 func init() {
 	repoCmd.AddCommand(repoUpdateCmd)
 
-	repoUpdateCmd.Flags().StringP("limit-to", "l", "", "Provide name for repository to update, omit for all")
-	repoUpdateCmd.MarkFlagRequired("limit-to")
+	repoUpdateCmd.Flags().StringP("limit-to", "l", "", "provide name for repository to update, omit for all")
 }
