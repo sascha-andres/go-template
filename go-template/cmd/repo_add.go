@@ -36,7 +36,7 @@ This does a clone of the repository to the storage directory`,
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
-		repository, err := e.AddRepository(cmd.Flag("url").Value.String())
+		repository, err := e.AddRepository(cmd.Flag("url").Value.String(), cmd.Flag("branch").Value.String())
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
@@ -51,6 +51,8 @@ This does a clone of the repository to the storage directory`,
 func init() {
 	repoCmd.AddCommand(repoAddCmd)
 
-	repoAddCmd.Flags().StringP("url", "u", "", "Provide url where to look for repository")
+	repoAddCmd.Flags().StringP("url", "u", "", "provide url where to look for repository")
 	repoAddCmd.MarkFlagRequired("url")
+
+	repoAddCmd.Flags().StringP("branch", "b", "", "provide a branch or tag")
 }

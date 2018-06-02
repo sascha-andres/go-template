@@ -11,7 +11,7 @@ import (
 )
 
 // AddRepository clones a repository and moves it into storage if it is a template repository
-func (e *Engine) AddRepository(url string) (*Repository, error) {
+func (e *Engine) AddRepository(url, branch string) (*Repository, error) {
 	logger := e.logger.WithField("method", "AddRepository")
 	logger.Debugf("add from [%s]", url)
 	temporaryDirectory, err := ioutil.TempDir("", "go-template")
@@ -23,7 +23,11 @@ func (e *Engine) AddRepository(url string) (*Repository, error) {
 			logger.Errorf("error removing temporary directory: %s", err.Error())
 		}
 	}()
-	wrapper.Git("clone", url, temporaryDirectory)
+	if "" != branch {
+		wrapper.Git("clone", "-b", branch, url, temporaryDirectory)
+	} else {
+		wrapper.Git("clone", url, temporaryDirectory)
+	}
 	if _, err := os.Stat(path.Join(temporaryDirectory, ".go-template.yml")); err != nil {
 		if os.IsNotExist(err) {
 			return nil, errors.New("not a go-template repository")
@@ -41,7 +45,7 @@ func (e *Engine) AddRepository(url string) (*Repository, error) {
 		}
 		return nil, err
 	}
-	err = os.Rename(temporaryDirectory, path.Join(e.storageDirectory, templateFile.Repository.Name))
+	err = copyDir(temporaryDirectory, path.Join(e.storageDirectory, templateFile.Repository.Name))
 	if err != nil {
 		return nil, err
 	}
