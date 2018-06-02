@@ -20,7 +20,7 @@ func (e *Engine) ListRepositories() ([]*Repository, error) {
 			fullPath := path.Join(e.storageDirectory, entry.Name())
 			logger.Infof("looking in [%s]", fullPath)
 			if _, err := os.Stat(path.Join(fullPath, ".go-template.yml")); err == nil {
-				logger.Info("found .go-template.yml")
+				logger.Debug("found .go-template.yml")
 				templateFile, err := e.readTemplateFile(path.Join(fullPath, ".go-template.yml"))
 				if err != nil {
 					return nil, err

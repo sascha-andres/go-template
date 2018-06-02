@@ -16,8 +16,11 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/sascha-andres/go-template"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // repoAddCmd represents the add command
@@ -28,7 +31,17 @@ var repoAddCmd = &cobra.Command{
 
 This does a clone of the repository to the storage directory`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
+		e, err := engine.New(viper.GetString("storage"), viper.GetString("log-level"))
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		repo, err := e.AddRepository(cmd.Flag("url").Value.String())
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		_ = repo
 	},
 }
 
