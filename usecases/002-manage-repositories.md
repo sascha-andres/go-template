@@ -4,7 +4,7 @@ Repositories are a list of templates available
 
 ## I want to add a repository
 
-go-template repo add --name <name> --url <git-url>
+go-template repo add --url <git-url>
 
 ## I want to remove a repository
 

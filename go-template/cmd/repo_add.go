@@ -35,9 +35,6 @@ This does a clone of the repository to the storage directory`,
 func init() {
 	repoCmd.AddCommand(repoAddCmd)
 
-	repoAddCmd.Flags().StringP("name", "n", "", "Provide name for new project")
-	repoAddCmd.MarkFlagRequired("name")
-
 	repoAddCmd.Flags().StringP("url", "u", "", "Provide url where to look for repository")
 	repoAddCmd.MarkFlagRequired("url")
 }

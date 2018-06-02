@@ -17,25 +17,42 @@ package cmd
 import (
 	"fmt"
 
+	"os"
+
+	"github.com/sascha-andres/go-template"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // newCmd represents the new command
 var newCmd = &cobra.Command{
 	Use:   "new",
 	Short: "Create project from template",
-	Long: `Create a project from a template`,
+	Long:  `Create a project from a template`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("new called")
+		arguments, err := splitArguments(cmd.Flag("arguments").Value.String())
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		e, err := engine.New(viper.GetString("storage"), viper.GetString("log-level"))
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		_ = e
+		_ = arguments
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(newCmd)
 
-	newCmd.Flags().StringP("name", "n", "", "Provide name for new project")
+	newCmd.Flags().StringP("name", "n", "", "provide name for new project")
 	newCmd.MarkFlagRequired("name")
 
-	newCmd.Flags().StringP("template", "t", "", "Provide name for template to use")
+	newCmd.Flags().StringP("template", "t", "", "provide name for template to use")
 	newCmd.MarkFlagRequired("template")
+
+	newCmd.Flags().String("arguments", "", "add arguments like this: --arguments Namespace=github.com/sascha.andres,Author=Someone")
 }
