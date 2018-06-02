@@ -16,8 +16,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"text/tabwriter"
 
+	"github.com/sascha-andres/go-template"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // repoListCmd represents the list command
@@ -26,7 +30,23 @@ var repoListCmd = &cobra.Command{
 	Short: "list all local repositories",
 	Long:  `List information about local repositories`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
+		e, err := engine.New(viper.GetString("storage"), viper.GetString("log-level"))
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+		list, err := e.ListRepositories()
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+
+		w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', tabwriter.AlignRight)
+		fmt.Fprintln(w, "name\tauthor\turl\t")
+		for _, entry := range list {
+			fmt.Fprintln(w, fmt.Sprintf("%s\t%s\t%s\t", entry.Name, entry.Author, entry.URL))
+		}
+		w.Flush()
 	},
 }
 

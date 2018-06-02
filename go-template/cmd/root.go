@@ -53,7 +53,7 @@ func init() {
 	// will be global for your application.
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.go-template.yaml)")
 	rootCmd.PersistentFlags().StringP("storage", "s", "${HOME}/.go-template", "where to store templates")
-	rootCmd.PersistentFlags().String("log-level", "info", "log level to use")
+	rootCmd.PersistentFlags().String("log-level", "warn", "log level to use")
 
 	viper.BindPFlag("storage", rootCmd.PersistentFlags().Lookup("storage"))
 	viper.BindPFlag("log-level", rootCmd.PersistentFlags().Lookup("log-level"))
