@@ -11,9 +11,10 @@ type (
 
 	// TemplateFile contains all relevant information about a template
 	TemplateFile struct {
-		Repository     Repository      `yaml:"project"`                  // Repository information
-		Transformation *Transformation `yaml:"transformation,omitempty"` // Transformation instructions
-		InitializeGit  bool            `yaml:"git"`                      // If true new project will be placed in a new git repository
+		Repository     Repository        `yaml:"project"`                  // Repository information
+		Transformation *Transformation   `yaml:"transformation,omitempty"` // Transformation instructions
+		InitializeGit  bool              `yaml:"git"`                      // If true new project will be placed in a new git repository
+		Arguments      map[string]string `yaml:"arguments"`                // List of arguments wanted by the template
 	}
 
 	// Repository contains information about a repository downloaded
