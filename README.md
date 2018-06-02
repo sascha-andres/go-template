@@ -52,7 +52,9 @@ Print out information for a specific repository. Useful to learn about arguments
 
 ### Apply
 
-    go-template new --template <name> --name <project-name> [--arg:key=value]{0,n}
+    go-template new --template <name> --name <project-name> --arguments [key=value],[key=value],...
+
+Providing an argument more than one time will be considered an error
 
 ## History
 
