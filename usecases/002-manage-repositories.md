@@ -17,3 +17,7 @@ go-template repos update
 ## I want to update a specific repository
 
 go-template repos update --limit-to <name>
+
+## I want to list all repositories
+
+go-template repos list
