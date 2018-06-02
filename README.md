@@ -56,6 +56,12 @@ Print out information for a specific repository. Useful to learn about arguments
 
 Providing an argument more than one time will be considered an error
 
+## Template repositories
+
+### https://github.com/sascha-andres/go-rest
+
+A rest service based on gin with prometheus metrics
+
 ## Acknowledgements
 
 Using code from https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
@@ -64,4 +70,4 @@ Using code from https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
 
 |Version|Description|
 |---|---|
-|TBD|initial version|
+|0.1.0|initial version|
