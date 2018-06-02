@@ -5,8 +5,6 @@ import (
 	"log"
 	"os"
 	"path"
-
-	yaml "gopkg.in/yaml.v1"
 )
 
 // ListRepositories lists all repositories downloaded
@@ -23,21 +21,7 @@ func (e *Engine) ListRepositories() ([]*Repository, error) {
 			logger.Infof("looking in [%s]", fullPath)
 			if _, err := os.Stat(path.Join(fullPath, ".go-template.yml")); err == nil {
 				logger.Info("found .go-template.yml")
-				f, err := os.Open(path.Join(fullPath, ".go-template.yml"))
-				if err != nil {
-					return nil, err
-				}
-				defer func() {
-					if err := f.Close(); err != nil {
-						logger.Error(err.Error())
-					}
-				}()
-				content, err := ioutil.ReadAll(f)
-				if err != nil {
-					return nil, err
-				}
-				var templateFile TemplateFile
-				err = yaml.Unmarshal(content, &templateFile)
+				templateFile, err := e.readTemplateFile(path.Join(fullPath, ".go-template.yml"))
 				if err != nil {
 					return nil, err
 				}
