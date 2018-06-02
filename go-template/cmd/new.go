@@ -40,8 +40,11 @@ var newCmd = &cobra.Command{
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
-		_ = e
-		_ = arguments
+		err = e.New(cmd.Flag("name").Value.String(), cmd.Flag("template").Value.String(), arguments)
+		if err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
 	},
 }
 
