@@ -36,12 +36,15 @@ This does a clone of the repository to the storage directory`,
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
-		repo, err := e.AddRepository(cmd.Flag("url").Value.String())
+		repository, err := e.AddRepository(cmd.Flag("url").Value.String())
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
-		_ = repo
+		fmt.Println(fmt.Sprintf("Name:        %s", repository.Name))
+		fmt.Println(fmt.Sprintf("Author:      %s", repository.Author))
+		fmt.Println(fmt.Sprintf("URL:         %s", repository.URL))
+		fmt.Println(fmt.Sprintf("Description:\n%s", repository.Description))
 	},
 }
 
