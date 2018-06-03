@@ -12,6 +12,8 @@ import (
 
 	"path/filepath"
 
+	"strings"
+
 	"github.com/pkg/errors"
 	"github.com/sascha-andres/go-template/wrapper"
 )
@@ -121,6 +123,10 @@ func (e *Engine) New(name, templateName string, arguments map[string]string) err
 		})
 		localFrom, localTo := replacements.From, buff.String()
 		err = filepath.Walk(workingDirectory, func(path string, info os.FileInfo, err error) error {
+			if nil != templateFile.Transformation.Templates && stringInSlice(strings.Replace(path, workingDirectory+"/", "", 1), templateFile.Transformation.Templates) {
+				logger.Debugf("[%s] is a template", path)
+				return nil
+			}
 			if err != nil {
 				fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", workingDirectory, err)
 				return err
