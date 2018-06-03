@@ -44,7 +44,7 @@ type (
 		ExcludedFiles []string            `yaml:"excluded-files"`         // ExcludedFiles may contain a list of files to not include in the new project
 		Renames       []FromToInformation `yaml:"renames,omitempty"`      // Renames is a list of renames in the filesystem
 		Replacements  []FromToInformation `yaml:"replacements,omitempty"` // Replacements is a list of replacements within the files, type may be a filename matching regex
-		// TODO Templates     []string `yaml:"templates"`      // Templates is a list of files to handle using text/template
+		Templates     []string            `yaml:"templates,omitempty"`    // Templates is a list of files to handle using text/template
 	}
 
 	// FromToInformation contains instruction how to change the source
