@@ -83,20 +83,11 @@ func (e *Engine) New(name, templateName string, arguments map[string]string) err
 		wrapper.Git("-C", workingDirectory, "commit", "-m", "\"feat: removed excluded files from template\"")
 	}
 	for _, rename := range templateFile.Transformation.Renames {
-		textTemplate, err := template.New("rename").Parse(rename.To)
+		localTo, err := applyVariables(rename.To, name, arguments)
 		if err != nil {
 			return err
 		}
-		var result []byte
-		buff := bytes.NewBuffer(result)
-		textTemplate.Execute(buff, struct {
-			Name      string
-			Arguments map[string]string
-		}{
-			Name:      name,
-			Arguments: arguments,
-		})
-		err = os.Rename(path.Join(workingDirectory, rename.From), path.Join(workingDirectory, buff.String()))
+		err = os.Rename(path.Join(workingDirectory, rename.From), path.Join(workingDirectory, localTo))
 		if err != nil {
 			logger.Warnf("could not rename [%s]: %s", rename.From, err.Error())
 		} else {
@@ -108,20 +99,10 @@ func (e *Engine) New(name, templateName string, arguments map[string]string) err
 		wrapper.Git("-C", workingDirectory, "commit", "-m", "\"feat: rename transformations\"")
 	}
 	for _, replacements := range templateFile.Transformation.Replacements {
-		textTemplate, err := template.New("replacement").Parse(replacements.To)
+		localTo, err := applyVariables(replacements.To, name, arguments)
 		if err != nil {
 			return err
 		}
-		var result []byte
-		buff := bytes.NewBuffer(result)
-		textTemplate.Execute(buff, struct {
-			Name      string
-			Arguments map[string]string
-		}{
-			Name:      name,
-			Arguments: arguments,
-		})
-		localFrom, localTo := replacements.From, buff.String()
 		err = filepath.Walk(workingDirectory, func(path string, info os.FileInfo, err error) error {
 			if nil != templateFile.Transformation.Templates && stringInSlice(strings.Replace(path, workingDirectory+"/", "", 1), templateFile.Transformation.Templates) {
 				logger.Debugf("[%s] is a template", path)
@@ -135,7 +116,7 @@ func (e *Engine) New(name, templateName string, arguments map[string]string) err
 				return filepath.SkipDir
 			}
 			if !info.IsDir() {
-				return replaceInFile(localFrom, localTo, path)
+				return replaceInFile(replacements.From, localTo, path)
 			}
 			return nil
 		})
@@ -148,4 +129,25 @@ func (e *Engine) New(name, templateName string, arguments map[string]string) err
 		wrapper.Git("-C", workingDirectory, "commit", "-m", "\"feat: replacements in files\"")
 	}
 	return copyDir(workingDirectory, projectDirectory)
+}
+
+// applyVariables takes a template and returns the result
+func applyVariables(templateContent, name string, arguments map[string]string) (string, error) {
+	textTemplate, err := template.New("replacement").Parse(templateContent)
+	if err != nil {
+		return "", err
+	}
+	var result []byte
+	buff := bytes.NewBuffer(result)
+	err = textTemplate.Execute(buff, struct {
+		Name      string
+		Arguments map[string]string
+	}{
+		Name:      name,
+		Arguments: arguments,
+	})
+	if err != nil {
+		return "", err
+	}
+	return buff.String(), nil
 }
