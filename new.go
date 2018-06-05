@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"github.com/sascha-andres/go-template/wrapper"
+	"livingit.de/code/go-template/wrapper"
 )
 
 func (e *Engine) New(name, templateName string, arguments map[string]string) error {

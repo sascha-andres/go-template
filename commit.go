@@ -1,6 +1,6 @@
 package engine
 
-import "github.com/sascha-andres/go-template/wrapper"
+import "livingit.de/code/go-template/wrapper"
 
 // commit adds all file to the stage and commits them
 func commit(workingDirectory, message string) {
