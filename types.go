@@ -21,6 +21,7 @@ type (
 	Engine struct {
 		storageDirectory string
 		logger           *logrus.Entry
+		err              error
 	}
 
 	// TemplateFile contains all relevant information about a template
@@ -72,4 +73,12 @@ func New(storage, logLevel string) (*Engine, error) {
 		return nil, err
 	}
 	return eng, nil
+}
+
+func (e *Engine) GetError() error {
+	return e.err
+}
+
+func (e *Engine) Error() string {
+	return e.err.Error()
 }

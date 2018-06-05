@@ -1,153 +1,49 @@
 package engine
 
 import (
-	"html/template"
-	"io/ioutil"
-	"os"
-	"path"
-
-	"bytes"
-
-	"fmt"
-
-	"path/filepath"
-
-	"strings"
-
-	"github.com/pkg/errors"
 	"github.com/sascha-andres/go-template/wrapper"
 )
 
 func (e *Engine) New(name, templateName string, arguments map[string]string) error {
-	logger := e.logger.WithField("method", "New")
-	currentDirectory, err := os.Getwd()
-	if err != nil {
-		return err
+	projectDirectory, templateDirectory, workingDirectory, deferFunc := e.setupDirectories(name, templateName)
+	if e.err == nil {
+		defer func() {
+			deferFunc()
+		}()
 	}
-	projectDirectory := path.Join(currentDirectory, name)
-	logger.Debugf("working for new project in %s", projectDirectory)
-	if _, err := os.Stat(projectDirectory); err != nil && !os.IsNotExist(err) {
-		return err
-	}
-	templateDirectory := path.Join(e.storageDirectory, templateName)
-	logger.Debugf("working with templateName in [%s]", templateDirectory)
-	if _, err := os.Stat(templateDirectory); err != nil && !os.IsExist(err) {
-		return errors.New("no such templateName")
-	}
-	temporaryDirectory, err := ioutil.TempDir("", "go-templateName")
-	if err != nil {
-		return err
-	}
-	defer func() {
-		logger.Debugf("removing [%s]", temporaryDirectory)
-		if err := os.RemoveAll(temporaryDirectory); err != nil {
-			logger.Errorf("unable to clean up: [%s]", err.Error())
-		}
-	}()
-	workingDirectory := path.Join(temporaryDirectory, "work")
-	logger.Debugf("creating working directory [%s]", workingDirectory)
-	err = copyDir(templateDirectory, workingDirectory)
-	if err != nil {
-		return err
-	}
-	logger.Debugf("remove [%s] folder", path.Join(workingDirectory, ".git"))
-	err = os.RemoveAll(path.Join(workingDirectory, ".git"))
-	if err != nil {
-		return err
-	}
-	templateFile, err := e.readTemplateFile(path.Join(e.storageDirectory, templateName, ".go-template.yml"))
-	if err != nil {
-		return err
-	}
-	if templateFile.InitializeGit {
+	e.initializeTemplate(templateDirectory, workingDirectory)
+	templateFile := e.loadTemplateFile(templateName, arguments)
+	if e.err == nil && templateFile.InitializeGit {
 		wrapper.Git("-C", workingDirectory, "init")
-		wrapper.Git("-C", workingDirectory, "add", "--all", ":/")
-		wrapper.Git("-C", workingDirectory, "commit", "-m", "\"feat: initial commit\"")
+		commit(workingDirectory, "\"feat: initial commit\"")
 		wrapper.Git("-C", workingDirectory, "checkout", "-b", "develop")
 	}
-	for _, arg := range templateFile.Arguments {
-		if _, ok := arguments[arg]; !ok {
-			return fmt.Errorf("argument not provided: [%s]", arg)
+	if e.err == nil {
+		for _, excluded := range templateFile.Transformation.ExcludedFiles {
+			e.handleExclusion(workingDirectory, excluded)
 		}
-	}
-	for _, excluded := range templateFile.Transformation.ExcludedFiles {
-		err = os.RemoveAll(path.Join(workingDirectory, excluded))
-		if err != nil {
-			logger.Warnf("could not remove [%s]: %s", excluded, err.Error())
-		} else {
-			logger.Debugf("removed [%s]", excluded)
+		if templateFile.InitializeGit {
+			commit(workingDirectory, "\"feat: removed excluded files from template\"")
 		}
-	}
-	if templateFile.InitializeGit {
-		wrapper.Git("-C", workingDirectory, "add", "--all", ":/")
-		wrapper.Git("-C", workingDirectory, "commit", "-m", "\"feat: removed excluded files from template\"")
-	}
-	for _, rename := range templateFile.Transformation.Renames {
-		localTo, err := applyVariables(rename.To, name, arguments)
-		if err != nil {
-			return err
+		for _, rename := range templateFile.Transformation.Renames {
+			e.handleRename(workingDirectory, name, arguments, rename)
 		}
-		err = os.Rename(path.Join(workingDirectory, rename.From), path.Join(workingDirectory, localTo))
-		if err != nil {
-			logger.Warnf("could not rename [%s]: %s", rename.From, err.Error())
-		} else {
-			logger.Debugf("renamed [%s]", rename.From)
+		if templateFile.InitializeGit {
+			commit(workingDirectory, "\"feat: rename transformations\"")
 		}
-	}
-	if templateFile.InitializeGit {
-		wrapper.Git("-C", workingDirectory, "add", "--all", ":/")
-		wrapper.Git("-C", workingDirectory, "commit", "-m", "\"feat: rename transformations\"")
-	}
-	for _, replacements := range templateFile.Transformation.Replacements {
-		localTo, err := applyVariables(replacements.To, name, arguments)
-		if err != nil {
-			return err
+		for _, replacements := range templateFile.Transformation.Replacements {
+			e.handleReplacements(templateFile, replacements, workingDirectory, name, arguments)
 		}
-		err = filepath.Walk(workingDirectory, func(path string, info os.FileInfo, err error) error {
-			if nil != templateFile.Transformation.Templates && stringInSlice(strings.Replace(path, workingDirectory+"/", "", 1), templateFile.Transformation.Templates) {
-				logger.Debugf("[%s] is a template", path)
-				return nil
-			}
-			if err != nil {
-				fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", workingDirectory, err)
-				return err
-			}
-			if info.IsDir() && info.Name() == ".git" {
-				return filepath.SkipDir
-			}
-			if !info.IsDir() {
-				return replaceInFile(replacements.From, localTo, path)
-			}
-			return nil
-		})
-		if err != nil {
-			return err
+		if templateFile.InitializeGit {
+			commit(workingDirectory, "\"feat: replacements in files\"")
 		}
+		for _, explicitTemplateFile := range templateFile.Transformation.Templates {
+			e.handleExplicitTemplate(workingDirectory, explicitTemplateFile, name, arguments)
+		}
+		if templateFile.InitializeGit {
+			commit(workingDirectory, "\"feat: handle explicit templates\"")
+		}
+		e.err = copyDir(workingDirectory, projectDirectory)
 	}
-	if templateFile.InitializeGit {
-		wrapper.Git("-C", workingDirectory, "add", "--all", ":/")
-		wrapper.Git("-C", workingDirectory, "commit", "-m", "\"feat: replacements in files\"")
-	}
-	return copyDir(workingDirectory, projectDirectory)
-}
-
-// applyVariables takes a template and returns the result
-func applyVariables(templateContent, name string, arguments map[string]string) (string, error) {
-	textTemplate, err := template.New("replacement").Parse(templateContent)
-	if err != nil {
-		return "", err
-	}
-	var result []byte
-	buff := bytes.NewBuffer(result)
-	err = textTemplate.Execute(buff, struct {
-		Name      string
-		Arguments map[string]string
-	}{
-		Name:      name,
-		Arguments: arguments,
-	})
-	if err != nil {
-		return "", err
-	}
-	return buff.String(), nil
+	return e.err
 }
