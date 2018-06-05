@@ -76,3 +76,4 @@ fabric.properties
 test/
 go-template/go-template
 coverage.txt
+dist/

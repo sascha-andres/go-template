@@ -107,7 +107,8 @@ Using code from https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
 
 |Version|Description|
 |---|---|
-|0.3.1|rmove some old url references|
+|0.3.2|add goreleaser configuration|
+|0.3.1|remove some old url references|
 | |update readme for binary distribution without go get|
 |0.3.0|add vanity url|
 |0.2.1|add badges to README|
