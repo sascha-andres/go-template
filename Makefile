@@ -38,10 +38,10 @@ build: ## Build a beta version
 	cd go-template && go build -o ${CURRENT_DIR} -race main.go
 
 snapshot: ## Create snapshot build
-	cd go-template && goreleaser --skip-publish --rm-dist --snapshot
+	goreleaser --skip-publish --rm-dist --snapshot
 
 release: ## Create release build
-	cd go-template && goreleaser --skip-publish --rm-dist
+	goreleaser --skip-publish --rm-dist
 
 install: ## Install to $GOPATH/src
 	cd go-template && go install ./...
