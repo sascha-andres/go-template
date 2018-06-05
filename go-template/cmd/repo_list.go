@@ -19,7 +19,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/sascha-andres/go-template"
+	"livingit.de/code/go-template"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
