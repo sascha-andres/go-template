@@ -16,7 +16,36 @@ There is one global configuration, the storage. It is a directorty where the tem
 
 ## .go-template.yml
 
-See go-template.md
+Placed in the root of the template repository this file enables go-template to use the repository as a template
+
+    project:
+      name: "go-rest"                                                    # Name your template
+      description: "rest service implementation inspired by Mat Ryer"    # A longer description
+      author: "Sascha Andres"                                            # Your name or handle
+      repository: "https://github.com/sascha-andres/go-rest"             # homepage/repository
+    
+    transformation:
+      templates:                                                         # List all files that are based on Go templates
+        - README.md
+      excluded-files:                                                    # List all files that shall not be part of new project
+        - ".go-template.yml"
+      renames:                                                           # rename files/folders
+        - from: "go-rest"
+          to: "{{ .Name }}"
+      replacements:                                                      # Replace content in files, templates will not be treated
+        - from: "go_rest"
+          to: "{{ .Name }}"
+        - from: "github.com/sascha-andres/go-rest/go-rest/cmd"
+          to: "{{ index .Arguments \"Namespace\" }}/{{ .Name }}/{{ .Name }}/cmd"
+        - from: "github.com/sascha-andres/go-rest"
+          to: "{{ index .Arguments \"Namespace\" }}/{{ .Name }}"
+        - from: "go-rest"
+          to: "{{ .Name }}"
+    
+    git: true                                                            # Initialize a git repository for new project
+    
+    arguments:                                                           # List of arguments required to run template
+      - Namespace
 
 ## Usage
 
@@ -25,7 +54,7 @@ See go-template.md
 #### Add a repository
 
     go-template repo add --url <git-url>
-    
+
 #### Update all repositories
 
 Iterate over all local repositories and issue a `git pull`
@@ -70,4 +99,7 @@ Using code from https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
 
 |Version|Description|
 |---|---|
+|0.2.0|add vendoring|
+||add explicit templates|
+||add .go-template.yml description|
 |0.1.0|initial version|
