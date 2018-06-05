@@ -21,7 +21,7 @@ import (
 	"path"
 
 	"github.com/pkg/errors"
-	"github.com/sascha-andres/go-template/wrapper"
+	"livingit.de/code/go-template/wrapper"
 )
 
 // AddRepository clones a repository and moves it into storage if it is a template repository

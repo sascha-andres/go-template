@@ -18,10 +18,6 @@ Cloning of the repositories is done by calls to git, so in order to have the man
 
     go get livingit.de/code/go-template
 
-### Binary
-
-    go get -u livingit.de/code/go-template/go-template
-
 ## Configuration
 
 There is one global configuration, the storage. It is a directorty where the templates are stored and defaults to `/.go-template`. You can override it using the commandline, a `~/.go-template.yml` containing the storage setting.
@@ -111,9 +107,11 @@ Using code from https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
 
 |Version|Description|
 |---|---|
+|0.3.1|rmove some old url references|
+| |update readme for binary distribution without go get|
 |0.3.0|add vanity url|
 |0.2.1|add badges to README|
 |0.2.0|add vendoring|
-||add explicit templates|
-||add .go-template.yml description|
+| |add explicit templates|
+| |add .go-template.yml description|
 |0.1.0|initial version|

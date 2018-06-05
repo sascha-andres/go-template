@@ -20,7 +20,7 @@ import (
 
 	"io/ioutil"
 
-	"github.com/sascha-andres/go-template/wrapper"
+	"livingit.de/code/go-template/wrapper"
 )
 
 // UpdateRepository issues a git pull
