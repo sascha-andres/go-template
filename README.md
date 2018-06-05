@@ -1,5 +1,7 @@
 # go-template
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/sascha-andres/go-template)](https://goreportcard.com/report/github.com/sascha-andres/go-template) [![codebeat badge](https://codebeat.co/badges/530c668a-42cb-41f5-a8e5-5284f606aa5e)](https://codebeat.co/projects/github-com-sascha-andres-go-template-master) [![Maintainability](https://api.codeclimate.com/v1/badges/f3fd3deb5a43e8acf536/maintainability)](https://codeclimate.com/github/sascha-andres/go-template/maintainability)
+
 Create go projects from templates
 
 ## Concept
@@ -99,6 +101,7 @@ Using code from https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
 
 |Version|Description|
 |---|---|
+|0.2.1|add badges to README|
 |0.2.0|add vendoring|
 ||add explicit templates|
 ||add .go-template.yml description|
