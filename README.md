@@ -12,7 +12,7 @@ Cloning of the repositories is done by calls to git, so in order to have the man
 
 ## Configuration
 
-TODO
+There is one global configuration, the storage. It is a directorty where the templates are stored and defaults to `/.go-template`. You can override it using the commandline, a `~/.go-template.yml` containing the storage setting.
 
 ## .go-template.yml
 
