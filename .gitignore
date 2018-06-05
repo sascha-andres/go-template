@@ -74,3 +74,5 @@ fabric.properties
 
 .idea/
 test/
+go-template/go-template
+coverage.txt
