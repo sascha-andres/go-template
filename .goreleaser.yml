@@ -1,6 +1,8 @@
 project_name: go-template
 builds:
   - binary: go-template
+    ldflags: -s -w -X go-template/cmd/version.version={{.Version}} -X go-template/cmd/version.commit={{.Commit}} -X go-template/cmd/version.date={{.Date}} -extldflags "-static"
+    flags: -a
     main: ./go-template/main.go
     goos:
       - windows
