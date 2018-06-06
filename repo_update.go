@@ -28,9 +28,8 @@ func (e *Engine) UpdateRepository(name string) error {
 	if ok, _ := e.exists(name); ok {
 		_, err := wrapper.Git("-C", path.Join(e.storageDirectory, name), "pull")
 		return err
-	} else {
-		return fmt.Errorf("no such repository: %s", name)
 	}
+	return fmt.Errorf("no such repository: %s", name)
 }
 
 // UpdateRepositories issues a git pull on all template repositories
