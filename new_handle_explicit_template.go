@@ -57,3 +57,12 @@ func (e *Engine) handleExplicitTemplate(workingDirectory, explicitTemplateFile, 
 		return
 	}
 }
+
+func (e *Engine) handleExplicitTemplates(workingDirectory, name string, arguments map[string]string) {
+	if e.err != nil {
+		return
+	}
+	for _, explicitTemplateFile := range e.templateFile.Transformation.Templates {
+		e.handleExplicitTemplate(workingDirectory, explicitTemplateFile, name, arguments)
+	}
+}

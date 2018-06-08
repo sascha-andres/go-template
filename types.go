@@ -22,6 +22,7 @@ type (
 		storageDirectory string
 		logger           *logrus.Entry
 		err              error
+		templateFile     *TemplateFile
 	}
 
 	// TemplateFile contains all relevant information about a template
