@@ -48,20 +48,20 @@ func (e *Engine) AddRepository(url, branch string) (*Repository, error) {
 		}
 		return nil, err
 	}
-	templateFile, err := e.readTemplateFile(path.Join(temporaryDirectory, ".go-template.yml"))
-	if err != nil {
+	e.readTemplateFile(path.Join(temporaryDirectory, ".go-template.yml"))
+	if e.err != nil {
 		return nil, err
 	}
-	if ok, err := e.exists(templateFile.Repository.Name); ok || err != nil {
+	if ok, err := e.exists(e.templateFile.Repository.Name); ok || err != nil {
 		if ok {
 			// TODO [resolve conflicting names]
 			return nil, errors.New("template already known")
 		}
 		return nil, err
 	}
-	err = copyDir(temporaryDirectory, path.Join(e.storageDirectory, templateFile.Repository.Name))
+	err = copyDir(temporaryDirectory, path.Join(e.storageDirectory, e.templateFile.Repository.Name))
 	if err != nil {
 		return nil, err
 	}
-	return &templateFile.Repository, nil
+	return &e.templateFile.Repository, nil
 }

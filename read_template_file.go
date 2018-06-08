@@ -22,12 +22,12 @@ import (
 )
 
 // readTemplateFile reads a specified template file and returns it
-func (e *Engine) readTemplateFile(path string) (*TemplateFile, error) {
+func (e *Engine) readTemplateFile(path string) error {
 	logger := e.logger.WithField("method", "readTemplateFile")
 	logger.Debugf("reading [%s]", path)
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer func() {
 		if err := f.Close(); err != nil {
@@ -36,13 +36,13 @@ func (e *Engine) readTemplateFile(path string) (*TemplateFile, error) {
 	}()
 	content, err := ioutil.ReadAll(f)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	var templateFile TemplateFile
 	err = yaml.Unmarshal(content, &templateFile)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	e.templateFile = &templateFile
-	return &templateFile, err
+	return err
 }
