@@ -43,5 +43,6 @@ func (e *Engine) readTemplateFile(path string) (*TemplateFile, error) {
 	if err != nil {
 		return nil, err
 	}
+	e.templateFile = &templateFile
 	return &templateFile, err
 }

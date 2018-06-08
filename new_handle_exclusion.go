@@ -32,3 +32,12 @@ func (e *Engine) handleExclusion(workingDirectory, excluded string) {
 		logger.Debugf("removed [%s]", excluded)
 	}
 }
+
+func (e *Engine) handleExclusions(workingDirectory string) {
+	if e.err != nil {
+		return
+	}
+	for _, excluded := range e.templateFile.Transformation.ExcludedFiles {
+		e.handleExclusion(workingDirectory, excluded)
+	}
+}

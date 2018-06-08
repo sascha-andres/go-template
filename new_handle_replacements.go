@@ -22,7 +22,7 @@ import (
 )
 
 // handleReplacements changes the contents of files in the template by replacements
-func (e *Engine) handleReplacements(templateFile *TemplateFile, replacements FromToInformation, workingDirectory, name string, arguments map[string]string) {
+func (e *Engine) handleReplacements(replacements FromToInformation, workingDirectory, name string, arguments map[string]string) {
 	if e.err != nil {
 		return
 	}
@@ -32,7 +32,7 @@ func (e *Engine) handleReplacements(templateFile *TemplateFile, replacements Fro
 		return
 	}
 	err = filepath.Walk(workingDirectory, func(path string, info os.FileInfo, err error) error {
-		if nil != templateFile.Transformation.Templates && stringInSlice(strings.Replace(path, workingDirectory+"/", "", 1), templateFile.Transformation.Templates) {
+		if nil != e.templateFile.Transformation.Templates && stringInSlice(strings.Replace(path, workingDirectory+"/", "", 1), e.templateFile.Transformation.Templates) {
 			e.logger.WithField("method", "handleReplacements").Debugf("[%s] is a template", path)
 			return nil
 		}
@@ -48,4 +48,13 @@ func (e *Engine) handleReplacements(templateFile *TemplateFile, replacements Fro
 		}
 		return nil
 	})
+}
+
+func (e *Engine) handleAllReplacements(workingDirectory, name string, arguments map[string]string) {
+	if e.err != nil {
+		return
+	}
+	for _, replacements := range e.templateFile.Transformation.Replacements {
+		e.handleReplacements(replacements, workingDirectory, name, arguments)
+	}
 }

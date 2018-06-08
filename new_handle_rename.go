@@ -37,3 +37,12 @@ func (e *Engine) handleRename(workingDirectory, name string, arguments map[strin
 		logger.Debugf("renamed [%s]", rename.From)
 	}
 }
+
+func (e *Engine) handleRenames(workingDirectory, name string, arguments map[string]string) {
+	if e.err != nil {
+		return
+	}
+	for _, rename := range e.templateFile.Transformation.Renames {
+		e.handleRename(workingDirectory, name, arguments, rename)
+	}
+}
