@@ -27,6 +27,9 @@ func (e *Engine) New(name, templateName string, arguments map[string]string) err
 	}
 	e.initializeTemplate(templateDirectory, workingDirectory)
 	e.loadTemplateFile(templateName, arguments)
+	if e.err != nil {
+		return e.err
+	}
 	if e.templateFile.InitializeGit {
 		wrapper.Git("-C", workingDirectory, "init")
 		e.templateFile.commit(workingDirectory, "\"feat: initial commit\"")
@@ -40,6 +43,8 @@ func (e *Engine) New(name, templateName string, arguments map[string]string) err
 	e.templateFile.commit(workingDirectory, "\"feat: replacements in files\"")
 	e.handleExplicitTemplates(workingDirectory, name, arguments)
 	e.templateFile.commit(workingDirectory, "\"feat: handle explicit templates\"")
-	e.err = copyDir(workingDirectory, projectDirectory)
+	if e.err == nil {
+		e.err = copyDir(workingDirectory, projectDirectory)
+	}
 	return e.err
 }

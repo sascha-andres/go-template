@@ -28,8 +28,10 @@ func (e *Engine) loadTemplateFile(templateName string, arguments map[string]stri
 		return
 	}
 	for _, arg := range e.templateFile.Arguments {
+		fmt.Println("Testing " + arg)
 		if _, ok := arguments[arg]; !ok {
 			e.err = fmt.Errorf("argument not provided: [%s]", arg)
+			break
 		}
 	}
 }
