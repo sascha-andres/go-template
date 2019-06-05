@@ -19,25 +19,24 @@ import (
 	"path"
 )
 
-// handleExclusion removes files that should not be part of generated project
-func (e *Engine) handleExclusion(workingDirectory, excluded string) {
-	if e.err != nil {
-		return
-	}
-	logger := e.logger.WithField("method", "handleExclusion")
-	e.err = os.RemoveAll(path.Join(workingDirectory, excluded))
-	if e.err != nil {
-		logger.Warnf("could not remove [%s]", excluded)
-	} else {
-		logger.Debugf("removed [%s]", excluded)
-	}
-}
-
+// handleExclusions removes files from the template that should not be part of the project
 func (e *Engine) handleExclusions(workingDirectory string) {
 	if e.err != nil {
 		return
 	}
+	handle := func(workingDirectory, excluded string) error {
+		logger := e.logger.WithField("method", "handleExclusion")
+		e.err = os.RemoveAll(path.Join(workingDirectory, excluded))
+		if e.err != nil {
+			logger.Warnf("could not remove [%s]", excluded)
+		} else {
+			logger.Debugf("removed [%s]", excluded)
+		}
+		return e.err
+	}
 	for _, excluded := range e.templateFile.Transformation.ExcludedFiles {
-		e.handleExclusion(workingDirectory, excluded)
+		if err := handle(workingDirectory, excluded); err != nil {
+			return
+		}
 	}
 }

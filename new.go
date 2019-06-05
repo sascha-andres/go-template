@@ -26,23 +26,25 @@ func (e *Engine) New(name, templateName string, arguments map[string]string) err
 		}()
 	}
 	e.initializeTemplate(templateDirectory, workingDirectory)
-	templateFile := e.loadTemplateFile(templateName, arguments)
+	e.loadTemplateFile(templateName, arguments)
 	if e.err != nil {
 		return e.err
 	}
-	if templateFile.InitializeGit {
+	if e.templateFile.InitializeGit {
 		wrapper.Git("-C", workingDirectory, "init")
-		templateFile.commit(workingDirectory, "\"feat: initial commit\"")
+		e.templateFile.commit(workingDirectory, "\"feat: initial commit\"")
 		wrapper.Git("-C", workingDirectory, "checkout", "-b", "develop")
 	}
 	e.handleExclusions(workingDirectory)
-	templateFile.commit(workingDirectory, "\"feat: removed excluded files from template\"")
+	e.templateFile.commit(workingDirectory, "\"feat: removed excluded files from template\"")
 	e.handleRenames(workingDirectory, name, arguments)
-	templateFile.commit(workingDirectory, "\"feat: rename transformations\"")
+	e.templateFile.commit(workingDirectory, "\"feat: rename transformations\"")
 	e.handleAllReplacements(workingDirectory, name, arguments)
-	templateFile.commit(workingDirectory, "\"feat: replacements in files\"")
+	e.templateFile.commit(workingDirectory, "\"feat: replacements in files\"")
 	e.handleExplicitTemplates(workingDirectory, name, arguments)
-	templateFile.commit(workingDirectory, "\"feat: handle explicit templates\"")
-	e.err = copyDir(workingDirectory, projectDirectory)
+	e.templateFile.commit(workingDirectory, "\"feat: handle explicit templates\"")
+	if e.err == nil {
+		e.err = copyDir(workingDirectory, projectDirectory)
+	}
 	return e.err
 }

@@ -20,20 +20,18 @@ import (
 )
 
 // loadTemplateFile reads template configuration and does a validation run
-func (e *Engine) loadTemplateFile(templateName string, arguments map[string]string) *TemplateFile {
-	if e.err != nil {
-		return nil
-	}
-	templateFile, err := e.readTemplateFile(path.Join(e.storageDirectory, templateName, ".go-template.yml"))
+func (e *Engine) loadTemplateFile(templateName string, arguments map[string]string) {
+
+	err := e.readTemplateFile(path.Join(e.storageDirectory, templateName, ".go-template.yml"))
 	if err != nil {
 		e.err = err
-		return nil
+		return
 	}
-	for _, arg := range templateFile.Arguments {
+	for _, arg := range e.templateFile.Arguments {
+		fmt.Println("Testing " + arg)
 		if _, ok := arguments[arg]; !ok {
 			e.err = fmt.Errorf("argument not provided: [%s]", arg)
-			return nil
+			break
 		}
 	}
-	return templateFile
 }
