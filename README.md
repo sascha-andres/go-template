@@ -107,6 +107,7 @@ Using code from https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
 
 |Version|Description|
 |---|---|
+|1.0.1|add version command|
 |1.0.0|switch to using go modules|
 |0.3.4|code improvements|
 |0.3.3|license information|
