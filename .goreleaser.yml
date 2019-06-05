@@ -1,7 +1,7 @@
 project_name: go-template
 builds:
   - binary: go-template
-    ldflags: -s -w -X go-template/cmd/version.version={{.Version}} -X go-template/cmd/version.commit={{.Commit}} -X go-template/cmd/version.date={{.Date}} -extldflags "-static"
+    ldflags: -s -w -X go-template/cmd/version.Version={{.Version}} -X go-template/cmd/version.Commit={{.Commit}} -X go-template/cmd/version.Date={{.Date}} -extldflags "-static"
     flags: -a
     main: ./go-template/main.go
     goos:
