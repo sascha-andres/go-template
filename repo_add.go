@@ -38,9 +38,12 @@ func (e *Engine) AddRepository(url, branch string) (*Repository, error) {
 		}
 	}()
 	if "" != branch {
-		wrapper.Git("clone", "-b", branch, url, temporaryDirectory)
+		_, err = wrapper.Git("clone", "-b", branch, url, temporaryDirectory)
 	} else {
-		wrapper.Git("clone", url, temporaryDirectory)
+		_, err = wrapper.Git("clone", url, temporaryDirectory)
+	}
+	if err != nil {
+		return nil, err
 	}
 	if _, err := os.Stat(path.Join(temporaryDirectory, ".go-template.yml")); err != nil {
 		if os.IsNotExist(err) {
@@ -48,8 +51,8 @@ func (e *Engine) AddRepository(url, branch string) (*Repository, error) {
 		}
 		return nil, err
 	}
-	e.readTemplateFile(path.Join(temporaryDirectory, ".go-template.yml"))
-	if e.err != nil {
+	err = e.readTemplateFile(path.Join(temporaryDirectory, ".go-template.yml"))
+	if err != nil {
 		return nil, err
 	}
 	if ok, err := e.exists(e.templateFile.Repository.Name); ok || err != nil {
